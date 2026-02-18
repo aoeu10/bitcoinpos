@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="description" content="Bitcoin Point-of-Sale" />
+  <title id="document-title">Bitcoin Point-of-Sale</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="header-brand">
+      <h1 class="header-title" id="header-business-name">Bitcoin Point-of-Sale</h1>
+      <img class="header-image hidden" id="header-image" alt="" />
+    </div>
+    <nav class="header-nav">
+      <div class="header-btc-wrap">
+        <span class="header-btc-price" id="header-btc-price" aria-label="Current Bitcoin price in USD"></span>
+        <span class="header-btc-sats" id="header-btc-sats" aria-label="Sats per dollar"></span>
+      </div>
+      <button type="button" class="btn btn-ghost nav-btn active" data-view="pos">POS</button>
+      <button type="button" class="btn btn-ghost nav-btn" data-view="about">About</button>
+      <button type="button" class="btn btn-ghost nav-btn" data-view="reconciliation">Reconciliation</button>
+      <button type="button" class="btn btn-ghost nav-btn" data-view="settings">Settings</button>
+    </nav>
+  </header>
+
+  <main class="main">
+    <!-- POS view: owner (keypad/products + bill) or customer (itemized + tip + pay) -->
+    <section id="view-pos" class="view view-pos active">
+      <div class="pos-content">
+        <div class="pos-owner-panel" id="pos-owner-panel">
+        <div class="pos-keypad-panel card" id="pos-keypad-panel">
+          <label class="keypad-label" for="keypad-item-label">Label (optional — appears on bill &amp; receipt)</label>
+          <input type="text" id="keypad-item-label" class="keypad-item-label" placeholder="e.g. Donation, Custom item" maxlength="80" />
+          <div class="keypad-display" id="keypad-display">0</div>
+          <div class="keypad-currency">
+            <select id="keypad-currency">
+              <option value="USD">USD ($)</option>
+              <option value="sats">sats</option>
+            </select>
+          </div>
+            <div class="keypad-grid">
+              <button type="button" class="keypad-btn" data-key="1">1</button>
+              <button type="button" class="keypad-btn" data-key="2">2</button>
+              <button type="button" class="keypad-btn" data-key="3">3</button>
+              <button type="button" class="keypad-btn" data-key="4">4</button>
+              <button type="button" class="keypad-btn" data-key="5">5</button>
+              <button type="button" class="keypad-btn" data-key="6">6</button>
+              <button type="button" class="keypad-btn" data-key="7">7</button>
+              <button type="button" class="keypad-btn" data-key="8">8</button>
+              <button type="button" class="keypad-btn" data-key="9">9</button>
+              <button type="button" class="keypad-btn" data-key=".">.</button>
+              <button type="button" class="keypad-btn" data-key="0">0</button>
+              <button type="button" class="keypad-btn keypad-btn-back" data-key="back">⌫</button>
+              <button type="button" class="keypad-btn keypad-btn-clear" data-key="clear">C</button>
+              <button type="button" class="keypad-btn keypad-btn-add btn-primary" id="keypad-add">Add to bill</button>
+            </div>
+          </div>
+          <div class="pos-menu-panel card hidden" id="pos-menu-panel">
+            <button type="button" class="btn btn-ghost btn-sm pos-menu-back" id="pos-menu-back">← Back</button>
+            <div class="product-category-tabs" id="product-category-tabs"></div>
+            <div class="product-grid" id="product-grid"></div>
+          </div>
+          <button type="button" class="btn btn-ghost pos-menu-btn" id="pos-show-menu">Products</button>
+        </div>
+        <div class="pos-customer-panel card hidden" id="pos-customer-panel">
+          <h2>Your bill</h2>
+          <ul class="customer-bill-items" id="customer-bill-items"></ul>
+          <div class="customer-bill-totals">
+            <div class="cart-total-row"><span>Subtotal</span><strong id="customer-subtotal">$0.00</strong></div>
+            <div class="cart-total-row"><span>Tax</span><strong id="customer-tax">$0.00</strong></div>
+            <div class="cart-total-row"><span>Tip</span><strong id="customer-tip">$0.00</strong></div>
+            <div class="cart-total-row total-row"><span>Total</span><strong id="customer-total">$0.00</strong></div>
+          </div>
+          <div class="customer-tip-options">
+            <label>Add tip</label>
+            <div class="tip-buttons" id="tip-buttons"></div>
+            <label>Or custom tip ($)</label>
+            <input type="number" id="customer-tip-custom" placeholder="0.00" min="0" step="0.01" inputmode="decimal" />
+          </div>
+          <button type="button" class="btn btn-primary btn-block btn-lg" id="pay-bitcoin-customer">Pay with Bitcoin</button>
+          <button type="button" class="btn btn-ghost btn-sm" id="customer-back">← Back to edit</button>
+        </div>
+      </div>
+      <aside class="cart-panel" id="cart-panel">
+        <div class="cart-header">
+          <h2>Bill</h2>
+          <button type="button" class="btn btn-ghost btn-sm" id="clear-cart">Clear</button>
+        </div>
+        <ul class="cart-items" id="cart-items"></ul>
+        <div class="cart-totals">
+          <div class="cart-total-row"><span>Subtotal (USD)</span><strong id="total-usd">$0.00</strong></div>
+          <div class="cart-total-row"><span>Total (sats)</span><strong id="total-sats">0</strong></div>
+        </div>
+        <div class="cart-settlement">
+          <label>Settle in</label>
+          <select id="settlement-currency">
+            <option value="USD">USD</option>
+            <option value="sats">sats</option>
+          </select>
+        </div>
+        <button type="button" class="btn btn-primary btn-block btn-lg" id="ready-for-payment">Ready for payment</button>
+      </aside>
+    </section>
+
+    <!-- Receipt view (after payment) -->
+    <section id="view-receipt" class="view view-receipt">
+      <div class="card receipt-card">
+        <h2>Receipt</h2>
+        <div class="receipt-content" id="receipt-content"></div>
+        <div class="receipt-actions">
+          <button type="button" class="btn btn-primary" id="receipt-print">Print</button>
+          <button type="button" class="btn btn-ghost" id="receipt-new-sale">New sale</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Reconciliation view -->
+    <section id="view-reconciliation" class="view view-reconciliation">
+      <div class="card">
+        <h3>Reconciliation</h3>
+        <div class="recon-period">
+          <label>Period</label>
+          <select id="recon-period">
+            <option value="day">Today</option>
+            <option value="week">This week</option>
+            <option value="month">This month</option>
+          </select>
+        </div>
+        <div class="recon-summary" id="recon-summary">
+          <div class="recon-row"><span>Sales</span><strong id="recon-sales">$0.00</strong></div>
+          <div class="recon-row"><span>Tips</span><strong id="recon-tips">$0.00</strong></div>
+          <div class="recon-row"><span>Taxes</span><strong id="recon-taxes">$0.00</strong></div>
+        </div>
+        <h4 class="recon-receipts-title">Receipts (stored on this device)</h4>
+        <div class="recon-receipts-list" id="recon-receipts-list"></div>
+        <div class="recon-pending-section">
+          <label class="checkbox-label recon-pending-toggle">
+            <input type="checkbox" id="recon-show-pending-invoices" />
+            Show pending unpaid invoices
+          </label>
+          <div class="recon-pending-list-wrap hidden" id="recon-pending-list-wrap">
+            <div class="recon-pending-list" id="recon-pending-list"></div>
+          </div>
+        </div>
+        <div class="recon-export-actions">
+          <button type="button" class="btn btn-ghost btn-sm" id="recon-export-pdf">Export PDF</button>
+          <button type="button" class="btn btn-primary btn-sm" id="recon-print-btn">Print</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- About view -->
+    <section id="view-about" class="view view-about">
+      <div class="card about-card">
+        <h3>About</h3>
+        <p class="text-muted">Strike POS is a point-of-sale web app for accepting Bitcoin via the Lightning Network. Add products, build a cart, and generate a Lightning invoice for the customer to pay. Receipts and reconciliation data are stored on this device. No server or account is required beyond a Strike API key for creating invoices.</p>
+
+        <h4 class="about-faq-title">FAQ</h4>
+        <dl class="about-faq">
+          <dt>Is this free?</dt>
+          <dd>Yes. This app is free to use. There are no subscriptions or fees from the app itself.</dd>
+
+          <dt>Where is my data stored?</dt>
+          <dd>All data (products, categories, transactions, settings, API key) is stored only on this device in your browser’s local storage. Nothing is sent to a central server. Export and import let you back up or move data between devices.</dd>
+
+          <dt>What do I need for the API?</dt>
+          <dd>You need a Strike API key to create Lightning invoices. Create one at <a href="https://dashboard.strike.me/api-keys" target="_blank" rel="noopener noreferrer">Strike Dashboard → API keys</a>. The key must have these scopes: <strong>Create invoice</strong> (partner.invoice.create), <strong>Generate invoice quote</strong> (partner.invoice.quote.generate), and <strong>Read currency exchange rate tickers</strong> (partner.rates.ticker). This PWA should <strong>not</strong> be given permission to send Bitcoin. It only needs permission to receive (create invoices and quotes). Do not enable send or withdrawal scopes for this app.</dd>
+
+          <dt>How does encrypted backup work?</dt>
+          <dd>When you export with “Encrypted (password)”, your backup is encrypted in the browser before download. The app uses AES-256-GCM with a key derived from your password via PBKDF2 (250,000 iterations, SHA-256). The password is never stored or sent anywhere. Only someone with the same password can decrypt the file when importing. The encryption happens entirely on your device.</dd>
+        </dl>
+
+        <h4 class="about-faq-title">Future plans</h4>
+        <p class="text-muted">Planned additions include a non-custodial point-of-sale option using eCash, so merchants can accept payments via custodial (Strike) or non-custodial options.</p>
+      </div>
+    </section>
+
+    <!-- Settings view -->
+    <section id="view-settings" class="view view-settings">
+      <div class="card">
+        <h3>Business</h3>
+        <label>Business name (shown in header)</label>
+        <input type="text" id="settings-business-name" placeholder="Bitcoin Point-of-Sale" maxlength="80" />
+        <label>Header image URL (shown to the right of business name in header and on exports)</label>
+        <input type="url" id="settings-header-image-url" placeholder="https://example.com/logo.png" />
+        <button type="button" class="btn btn-primary" id="settings-save-business">Save</button>
+      </div>
+      <div class="card">
+        <h3>Developer</h3>
+        <p class="text-muted">When enabled, a "Pretend to pay" button appears on the checkout screen so you can simulate a successful payment without sending real Bitcoin/Lightning.</p>
+        <label class="checkbox-label">
+          <input type="checkbox" id="settings-developer-mode" />
+          Developer mode
+        </label>
+      </div>
+      <div class="card">
+        <h3>Protect</h3>
+        <p class="text-muted">When enabled, Reconciliation and Settings require a 4-digit PIN to open. If you forget your PIN, the only way to restore access is to reset the app (all data will be cleared) or restore from backup.</p>
+        <label class="checkbox-label">
+          <input type="checkbox" id="settings-protect-enabled" />
+          Protect mode
+        </label>
+        <p class="protect-pin-set-msg hidden" id="settings-protect-pin-set-msg">PIN is set.</p>
+        <div id="settings-protect-pin-fields" class="hidden">
+          <label id="settings-protect-pin-label">Set 4-digit PIN</label>
+          <input type="password" id="settings-protect-pin" placeholder="••••" maxlength="4" inputmode="numeric" pattern="[0-9]*" autocomplete="off" />
+          <div id="settings-protect-pin-confirm-wrap" class="hidden">
+            <label>Confirm PIN</label>
+            <input type="password" id="settings-protect-pin-confirm" placeholder="••••" maxlength="4" inputmode="numeric" pattern="[0-9]*" autocomplete="off" />
+          </div>
+          <p class="protect-pin-feedback text-muted hidden" id="settings-protect-pin-error"></p>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Invoice API</h3>
+        <p class="text-muted">Your API key must have scopes: Create invoice, Generate invoice quote, and Read currency exchange rate tickers (partner.rates.ticker).</p>
+        <p class="text-muted"><a href="https://docs.strike.me" target="_blank" rel="noopener noreferrer">Strike API documentation</a></p>
+        <label>API key</label>
+        <input type="password" id="settings-api-key" placeholder="Strike API key" autocomplete="off" />
+        <button type="button" class="btn btn-primary" id="settings-save">Save</button>
+      </div>
+      <div class="card">
+        <h3>Tax &amp; tips</h3>
+        <label>Tax rate (%)</label>
+        <input type="number" id="settings-tax-rate" placeholder="0" min="0" max="100" step="0.01" />
+        <label>Default tip options (%) — comma-separated, e.g. 15, 20</label>
+        <input type="text" id="settings-tip-percentages" placeholder="15, 20" />
+        <button type="button" class="btn btn-primary" id="settings-save-tax-tips">Save</button>
+      </div>
+      <div class="card settings-categories">
+        <h3>Categories</h3>
+        <p class="text-muted">Group products (e.g. Drinks, Food). Products can be assigned a category.</p>
+        <div class="menu-toolbar">
+          <button type="button" class="btn btn-primary" id="add-category-btn">Add category</button>
+        </div>
+        <div class="category-form card hidden" id="category-form">
+          <h4 id="category-form-title">Add category</h4>
+          <label>Name</label>
+          <input type="text" id="category-name" placeholder="e.g. Drinks" maxlength="80" />
+          <div class="form-actions">
+            <button type="button" class="btn btn-ghost" id="category-form-cancel">Cancel</button>
+            <button type="button" class="btn btn-primary" id="category-form-save">Save</button>
+          </div>
+        </div>
+        <ul class="category-list" id="category-list"></ul>
+      </div>
+      <div class="card settings-products">
+        <h3>Products</h3>
+        <p class="text-muted">Edit the products that appear under Products on the POS screen.</p>
+        <div class="menu-toolbar">
+          <button type="button" class="btn btn-primary" id="add-product-btn">Add product</button>
+        </div>
+        <div class="product-form card hidden" id="product-form">
+          <h3 id="product-form-title">Add product</h3>
+          <label>Name</label>
+          <input type="text" id="product-name" placeholder="e.g. Coffee" maxlength="100" />
+          <label>Category</label>
+          <select id="product-category">
+            <option value="">— None —</option>
+          </select>
+          <label>Price</label>
+          <input type="number" id="product-price" placeholder="0" min="0" step="any" inputmode="decimal" />
+          <label>Currency</label>
+          <select id="product-currency">
+            <option value="USD">USD ($)</option>
+            <option value="sats">sats</option>
+          </select>
+          <div class="form-actions">
+            <button type="button" class="btn btn-ghost" id="product-form-cancel">Cancel</button>
+            <button type="button" class="btn btn-primary" id="product-form-save">Save</button>
+          </div>
+        </div>
+        <ul class="product-list" id="product-list"></ul>
+      </div>
+      <div class="card" id="settings-export-import-card">
+        <h3 id="settings-export-import-title">Export &amp; Import</h3>
+        <p class="text-muted" id="settings-export-import-intro">Back up or restore data. Protect PIN is never included. Current data will be overwritten on import.</p>
+        <div class="export-import-section" id="settings-export-section">
+          <h4>Export</h4>
+          <label>What to export</label>
+          <select id="export-scope">
+            <option value="transactions">Reconciliation &amp; receipts only</option>
+            <option value="settings">Settings only</option>
+            <option value="all">Both</option>
+          </select>
+          <label>Format</label>
+          <select id="export-format">
+            <option value="unencrypted">Unencrypted (JSON)</option>
+            <option value="encrypted">Encrypted (password)</option>
+          </select>
+          <div id="export-password-wrap" class="hidden">
+            <label>Password</label>
+            <input type="password" id="export-password" placeholder="Password" autocomplete="new-password" />
+            <label>Confirm password</label>
+            <input type="password" id="export-password-confirm" placeholder="Confirm password" autocomplete="new-password" />
+            <p class="export-password-feedback hidden" id="export-password-feedback"></p>
+          </div>
+          <button type="button" class="btn btn-primary" id="export-btn">Export</button>
+        </div>
+        <div class="export-import-section" id="settings-import-section">
+          <h4>Import</h4>
+          <label>Backup file</label>
+          <input type="file" id="import-file" accept=".json,.enc,application/json" />
+          <button type="button" class="btn btn-ghost" id="import-btn">Import</button>
+        </div>
+      </div>
+      <div class="card settings-reset">
+        <h3>Reset</h3>
+        <p class="text-muted">Reset app and clear all data. This will delete all stored data: transactions, products, categories, settings, and your API key. This cannot be undone.</p>
+        <div class="settings-reset-actions">
+          <button type="button" class="btn btn-primary" id="settings-reset-app">Reset app and clear all data</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Checkout modal (QR + invoice) -->
+  <div class="modal-overlay hidden" id="checkout-modal">
+    <div class="modal card checkout-modal">
+      <button type="button" class="modal-close" id="checkout-close" aria-label="Close">&times;</button>
+      <h2>Scan to pay</h2>
+      <p class="checkout-amount" id="checkout-amount"></p>
+      <p class="checkout-status" id="checkout-status" aria-live="polite"></p>
+      <div class="qr-wrap" id="qr-wrap"></div>
+      <p class="checkout-expiry" id="checkout-expiry"></p>
+      <div class="checkout-invoice">
+        <label>Lightning invoice (copy if needed)</label>
+        <textarea id="checkout-lninvoice" readonly></textarea>
+        <button type="button" class="btn btn-ghost btn-sm" id="checkout-copy">Copy</button>
+      </div>
+      <button type="button" class="btn btn-ghost hidden" id="checkout-pretend-pay">Pretend to pay</button>
+      <button type="button" class="btn btn-ghost" id="checkout-done">Done</button>
+      <button type="button" class="btn btn-primary hidden" id="checkout-view-receipt">View receipt</button>
+    </div>
+  </div>
+
+  <!-- Receipt detail modal (from Reconciliation) -->
+  <div class="modal-overlay hidden" id="receipt-detail-modal">
+    <div class="modal card receipt-detail-modal">
+      <button type="button" class="modal-close" id="receipt-detail-close" aria-label="Close">&times;</button>
+      <h3>Receipt</h3>
+      <div class="receipt-detail-content" id="receipt-detail-content"></div>
+      <div class="receipt-export-actions">
+        <button type="button" class="btn btn-ghost btn-sm" id="receipt-export-pdf">Export PDF</button>
+        <button type="button" class="btn btn-primary btn-sm" id="receipt-print-btn">Print</button>
+      </div>
+      <button type="button" class="btn btn-ghost" id="receipt-detail-close-btn">Close</button>
+    </div>
+  </div>
+  <div id="receipt-print-area" class="receipt-print-area hidden"></div>
+  <div id="recon-print-area" class="recon-print-area hidden"></div>
+
+  <!-- PIN entry modal (for Protect mode) -->
+  <div class="modal-overlay hidden" id="pin-modal">
+    <div class="modal card pin-modal">
+      <h3>Enter PIN</h3>
+      <p class="text-muted">Reconciliation and Settings are protected. Enter your 4-digit PIN to continue.</p>
+      <label for="pin-input">PIN</label>
+      <input type="password" id="pin-input" placeholder="••••" maxlength="4" inputmode="numeric" pattern="[0-9]*" autocomplete="off" />
+      <p class="pin-error text-muted hidden" id="pin-error"></p>
+      <div class="pin-modal-actions">
+        <button type="button" class="btn btn-ghost" id="pin-cancel">Cancel</button>
+        <button type="button" class="btn btn-primary" id="pin-submit">Continue</button>
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm pin-forgot" id="pin-forgot">Forgot PIN?</button>
+    </div>
+  </div>
+
+  <!-- Forgot PIN warning modal -->
+  <div class="modal-overlay hidden" id="forgot-pin-modal">
+    <div class="modal card">
+      <h3>Forgot PIN</h3>
+      <p class="text-muted">If you forget your PIN, you can restore access by restoring from a backup, if you have one.</p>
+      <div class="forgot-pin-actions">
+        <button type="button" class="btn btn-ghost" id="forgot-pin-close">Close</button>
+        <button type="button" class="btn btn-primary" id="forgot-pin-import">Import</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Import password modal (for encrypted backup) -->
+  <div class="modal-overlay hidden" id="import-password-modal">
+    <div class="modal card">
+      <h3>Enter password</h3>
+      <p class="text-muted">This backup is encrypted. Enter the password used when exporting.</p>
+      <label>Password</label>
+      <input type="password" id="import-password" placeholder="Password" autocomplete="off" />
+      <p class="import-password-error hidden" id="import-password-error"></p>
+      <div class="form-actions">
+        <button type="button" class="btn btn-ghost" id="import-password-cancel">Cancel</button>
+        <button type="button" class="btn btn-primary" id="import-password-submit">Continue</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Import summary modal -->
+  <div class="modal-overlay hidden" id="import-summary-modal">
+    <div class="modal card">
+      <h3>Import backup</h3>
+      <div id="import-summary-content"></div>
+      <p class="import-overwrite-warning" id="import-overwrite-warning"></p>
+      <div class="form-actions">
+        <button type="button" class="btn btn-ghost" id="import-summary-cancel">Cancel</button>
+        <button type="button" class="btn btn-primary" id="import-summary-confirm">Import</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/qrcode.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
