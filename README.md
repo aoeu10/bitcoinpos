@@ -1,51 +1,70 @@
 # Strike POS PWA
 
-A point-of-sale web app that accepts Bitcoin/Lightning payments via the [Strike API](https://docs.strike.me). Prices can be entered in USD or sats; products are selected from a local menu or added as custom amounts. The final bill is paid by generating a Lightning invoice (QR code) through Strike.
+A point-of-sale web app that accepts Bitcoin/Lightning payments via the [Strike API](https://docs.strike.me). Prices can be entered in USD or sats; products are selected from a local menu or added as custom amounts. The final bill is paid by generating a Lightning invoice (QR code) through Strike. The app polls invoice status and shows a receipt when the payment is confirmed.
 
-- **PWA**: Installable on phone and tablet; works offline for the POS UI; invoice creation requires network.
-- **Local data**: Menu and cart are stored only on the device (localStorage). No server-side menu or cart.
-- **Invoice API**: Use either a backend proxy (recommended) or a Strike API key stored locally (single trusted device only).
+- **PWA**: Installable on phone and tablet; works offline for the POS UI; invoice creation and status checks require network.
+- **Local data**: Menu, cart, transactions, receipts, and settings (including API key) are stored only on the device (localStorage). No server-side menu or cart.
+- **API key**: Enter your Strike API key in **Settings**. It is stored locally in the browser. Use only on a single trusted device.
+
+## Features
+
+- **POS**: Keypad and product grid; cart with subtotal in USD and sats; settlement in USD or sats.
+- **Customer flow**: “Ready for payment” switches to a customer view with itemized bill, tax, tip options (or custom tip), and “Pay with Bitcoin”.
+- **Receipts**: After payment, view and print receipts; receipts are stored on device.
+- **Reconciliation**: Today / this week / this month summary (sales, tips, taxes); list of receipts; optional list of pending unpaid invoices; export PDF and print.
+- **Business**: Custom business name and header image URL (shown in header and on exports).
+- **Tax & tips**: Configurable tax rate and default tip percentages (e.g. 15%, 20%).
+- **Categories & products**: Manage categories and products in Settings; products can be priced in USD or sats.
+- **Protect mode**: Optional 4-digit PIN to open Reconciliation and Settings.
+- **Developer mode**: Optional “Pretend to pay” on checkout for testing without real payment.
+- **Export & import**: Backup transactions and/or settings as JSON; optional encrypted (password-protected) export. Restore via import.
 
 ## Quick start
 
-### 1. Backend proxy (recommended)
+### 1. Run the app
 
-Set `STRIKE_API_KEY` in your environment and deploy the API:
-
-- **Vercel**: Deploy the repo; add `STRIKE_API_KEY` (and optionally `STRIKE_SANDBOX=true`) in Project Settings → Environment Variables. The route `POST /api/create-invoice` is served from `api/create-invoice.js`.
 - **Local**: From the project directory run:
   ```bash
-  STRIKE_API_KEY=your_key node server.js
+  node server.js
   ```
-  Then open http://localhost:3000 . For sandbox, set `STRIKE_SANDBOX=true`.
+  Then open http://localhost:3000 . The server serves the static app and does **not** use your API key; the app uses the key you enter in Settings.
 
-### 2. Frontend
+- **Static hosting**: Upload the project to any static host. No server required; the app calls the Strike API directly from the browser using the key stored in Settings.
 
-- **With local server**: `node server.js` serves the app and the same `POST /api/create-invoice` endpoint.
-- **Static hosting**: Upload the project (without `server.js` and `api/`) to any static host. In the app, open **Settings** and set **Proxy URL** to your deployed API base URL (e.g. `https://your-app.vercel.app`).
+### 2. Configure in the app
 
-### 3. Settings in the app
+- Open **Settings** and enter your **Strike API key**. The key is stored only in this device’s browser.
+- Optionally enable **Use Strike sandbox** for testnet (requires a sandbox API key from [Sandbox Dashboard](https://dev.dashboard.strike.me/)).
 
-- **Proxy URL**: Your backend base URL (e.g. `https://your-api.vercel.app`). No trailing slash. Invoice requests go to `{Proxy URL}/api/create-invoice`.
-- **Or API key**: You can instead enter your Strike API key (stored locally). Use only on a single trusted device; for shared or public use, use the proxy.
-- **Use Strike sandbox**: Enable for testnet/sandbox (requires a sandbox API key from [Sandbox Dashboard](https://dev.dashboard.strike.me/)).
+**Required API key scopes**: Create invoice (`partner.invoice.create`), Generate invoice quote (`partner.invoice.quote.generate`), and Read currency exchange rate tickers (`partner.rates.ticker`). Add these in the [Strike Dashboard](https://dashboard.strike.me/) (or Sandbox Dashboard). Do not enable send or withdrawal scopes for this app.
 
-**Required API key scopes**: The key (whether used in the proxy or in the app) must have **Create invoice** (`partner.invoice.create`) and **Generate invoice quote** (`partner.invoice.quote.generate`). Add these in the [Strike Dashboard](https://dashboard.strike.me/) (or Sandbox Dashboard) when creating or editing your API key. If you see "Insufficient permissions", enable those two scopes and try again.
+## Optional: backend API (proxy)
 
-## API proxy request/response
+The repo includes serverless handlers so you can keep the API key on the server instead of in the browser. The **current app UI uses the key from Settings** and talks to Strike directly; it does not call a proxy. If you want a proxy:
 
-- **POST** `{base}/api/create-invoice`
-- **Body**: `{ "amount": "12.50", "currency": "USD", "description": "optional" }`  
-  For sats: `{ "amount": "12500", "currency": "sats" }`
-- **Response**: `{ "lnInvoice": "...", "expirationInSec": 30, "invoiceId": "...", "expiration": "..." }`
+- Deploy `api/create-invoice.js` and `api/get-invoice.js` (e.g. Vercel: add `STRIKE_API_KEY` and optionally `STRIKE_SANDBOX=true` in Project Settings; `vercel.json` is already set up).
+- You would need to change the app to call your proxy base URL for create-invoice and get-invoice instead of calling Strike from the client.
+
+## API (for proxy or integration)
+
+- **POST** `{base}/api/create-invoice`  
+  **Body**: `{ "amount": "12.50", "currency": "USD", "description": "optional" }` or for sats: `{ "amount": "12500", "currency": "sats" }`  
+  **Response**: `{ "lnInvoice": "...", "expirationInSec": 30, "invoiceId": "...", "expiration": "..." }`
+
+- **GET** `{base}/api/get-invoice?id={invoiceId}`  
+  **Response**: `{ "state": "PAID" | "UNPAID" | ..., "invoiceId": "..." }`
 
 ## File structure
 
-- `index.html`, `styles.css`, `app.js` – PWA UI (POS, menu, cart, checkout, settings).
+- `index.html`, `styles.css`, `app.js` – PWA UI (POS, menu, cart, checkout, receipts, reconciliation, about, settings).
 - `sw.js` – Service worker (offline cache for static assets).
 - `manifest.json` – PWA manifest (name, start_url, display, icons).
-- `api/create-invoice.js` – Serverless handler (Strike create invoice + quote, return `lnInvoice`).
-- `server.js` – Local dev server (static files + same API for development).
+- `icons/icon.svg` – App icon.
+- `js/qrcode.min.js` – QR code library for Lightning invoice display.
+- `api/create-invoice.js` – Serverless create-invoice handler (for optional proxy).
+- `api/get-invoice.js` – Serverless get-invoice handler (for optional proxy).
+- `server.js` – Local dev server (static files and same API routes for development).
+- `vercel.json` – Vercel config for deploying the API routes.
 
 ## License
 
