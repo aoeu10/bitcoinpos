@@ -43,13 +43,7 @@
   }
 
   function getDefaultProducts() {
-    const cats = getCategories();
-    const firstId = cats.length ? cats[0].id : null;
-    return [
-      { id: '1', name: 'Coffee', price: '4.50', currency: 'USD', categoryId: firstId },
-      { id: '2', name: 'Sandwich', price: '8.00', currency: 'USD', categoryId: null },
-      { id: '3', name: 'Water', price: '500', currency: 'sats', categoryId: firstId },
-    ];
+    return [];
   }
 
   function saveProducts(products) {
@@ -66,10 +60,7 @@
   }
 
   function getDefaultCategories() {
-    return [
-      { id: 'cat1', name: 'Drinks' },
-      { id: 'cat2', name: 'Food' },
-    ];
+    return [];
   }
 
   function saveCategories(categories) {
