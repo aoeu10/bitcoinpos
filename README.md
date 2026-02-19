@@ -31,15 +31,6 @@ A point-of-sale web app that accepts Bitcoin/Lightning payments via the [Strike 
 
 **Required API key scopes**: Create invoice (`partner.invoice.create`), Generate invoice quote (`partner.invoice.quote.generate`), and Read currency exchange rate tickers (`partner.rates.ticker`). Add these in the [Strike Dashboard](https://dashboard.strike.me/). Do not enable send or withdrawal scopes for this app.
 
-## API (for proxy or integration)
-
-- **POST** `{base}/api/create-invoice`  
-  **Body**: `{ "amount": "12.50", "currency": "USD", "description": "optional" }` or for sats: `{ "amount": "12500", "currency": "sats" }`  
-  **Response**: `{ "lnInvoice": "...", "expirationInSec": 30, "invoiceId": "...", "expiration": "..." }`
-
-- **GET** `{base}/api/get-invoice?id={invoiceId}`  
-  **Response**: `{ "state": "PAID" | "UNPAID" | ..., "invoiceId": "..." }`
-
 ## File structure
 
 - `index.html`, `styles.css`, `app.js` – PWA UI (POS, menu, cart, checkout, receipts, reconciliation, about, settings).
