@@ -6,6 +6,8 @@
   <meta name="theme-color" content="#0f172a" />
   <meta name="description" content="Bitcoin Point-of-Sale" />
   <title id="document-title">Bitcoin Point-of-Sale</title>
+  <link rel="canonical" href="https://aoeu10.github.io/bitcoinpos/" />
+  <link rel="manifest" href="/bitcoinpos/manifest.webmanifest">
   <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -427,5 +429,13 @@
 
   <script src="js/qrcode.min.js"></script>
   <script src="app.js"></script>
+  <script>
+    if (navigator.serviceWorker) {
+      navigator.serviceWorker.register (
+        '/bitcoinpos/sw.js',
+        {scope: '/bitcoinpos/'}
+      )
+    }
+</script>
 </body>
 </html>

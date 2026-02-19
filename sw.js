@@ -1,3 +1,22 @@
+var GHPATH = '/bitcoinpos';
+var APP_PREFIX = 'btcpos_';
+var VERSION = 'version_002';
+var URLS = [    
+  `${GHPATH}/`,
+  `${GHPATH}/index.html`,
+  `${GHPATH}/styles.css`,
+  `${GHPATH}/icons/icon.svg`,
+  `${GHPATH}/app.js`,
+  `${GHPATH}/js/qrcode.min.js`,
+  `${GHPATH}/manifest.json`,
+  `${GHPATH}/api/create-invoice.js`,
+  `${GHPATH}/api/get-invoice.js`,
+  `${GHPATH}/server.js`,
+  `${GHPATH}/vercel.json`,
+  `${GHPATH}/sw.js`
+]
+
+
 const CACHE_NAME = 'strike-pos-v2';
 const NETWORK_FIRST_URLS = ['/', '/index.html', '/app.js', '/styles.css'];
 

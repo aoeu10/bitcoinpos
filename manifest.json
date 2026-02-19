@@ -1,7 +1,9 @@
 {
   "name": "Strike POS",
   "short_name": "Strike POS",
-  "description": "Bitcoin point of sale with Strike API",
+    "scope": "/bitcoinpos/",
+    "start_url": "/bitcoinpos/",
+  "description": "Bitcoin point of sale with Strike API Progressive Web App",
   "start_url": "/",
   "display": "standalone",
   "orientation": "any",
@@ -15,4 +17,6 @@
       "purpose": "any"
     }
   ]
+
+  
 }
