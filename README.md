@@ -23,36 +23,13 @@ A point-of-sale web app that accepts Bitcoin/Lightning payments via the [Strike 
 
 ### 1. Run the app
 
-- **Local**: From the project directory run:
-  ```bash
-  node server.js
-  ```
-  Then open http://localhost:3000 . The server serves the static app and does **not** use your API key; the app uses the key you enter in Settings.
-
-- **Static hosting**: Upload the project to any static host. No server required; the app calls the Strike API directly from the browser using the key stored in Settings.
+- **Static hosting**: Upload the project to any static host. No server required; the app calls the Strike API directly from the browser using the key stored in Settings. The latest version is able to be accessed here: [BitcoinPOS](https://aoeu10.github.io/bitcoinpos/)
 
 ### 2. Configure in the app
 
 - Open **Settings** and enter your **Strike API key**. The key is stored only in this device’s browser.
-- Optionally enable **Use Strike sandbox** for testnet (requires a sandbox API key from [Sandbox Dashboard](https://dev.dashboard.strike.me/)).
 
-**Required API key scopes**: Create invoice (`partner.invoice.create`), Generate invoice quote (`partner.invoice.quote.generate`), and Read currency exchange rate tickers (`partner.rates.ticker`). Add these in the [Strike Dashboard](https://dashboard.strike.me/) (or Sandbox Dashboard). Do not enable send or withdrawal scopes for this app.
-
-## Optional: backend API (proxy)
-
-The repo includes serverless handlers so you can keep the API key on the server instead of in the browser. The **current app UI uses the key from Settings** and talks to Strike directly; it does not call a proxy. If you want a proxy:
-
-- Deploy `api/create-invoice.js` and `api/get-invoice.js` (e.g. Vercel: add `STRIKE_API_KEY` and optionally `STRIKE_SANDBOX=true` in Project Settings; `vercel.json` is already set up).
-- You would need to change the app to call your proxy base URL for create-invoice and get-invoice instead of calling Strike from the client.
-
-## API (for proxy or integration)
-
-- **POST** `{base}/api/create-invoice`  
-  **Body**: `{ "amount": "12.50", "currency": "USD", "description": "optional" }` or for sats: `{ "amount": "12500", "currency": "sats" }`  
-  **Response**: `{ "lnInvoice": "...", "expirationInSec": 30, "invoiceId": "...", "expiration": "..." }`
-
-- **GET** `{base}/api/get-invoice?id={invoiceId}`  
-  **Response**: `{ "state": "PAID" | "UNPAID" | ..., "invoiceId": "..." }`
+**Required API key scopes**: Create invoice (`partner.invoice.create`), Generate invoice quote (`partner.invoice.quote.generate`), and Read currency exchange rate tickers (`partner.rates.ticker`). Add these in the [Strike Dashboard](https://dashboard.strike.me/). Do not enable send or withdrawal scopes for this app.
 
 ## File structure
 
