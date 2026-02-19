@@ -2026,16 +2026,35 @@
   renderCart();
 
   if (!getApiKey().trim()) {
-    document.getElementById('no-api-key-modal').classList.remove('hidden');
+    document.getElementById('get-started-modal').classList.remove('hidden');
+  } else {
+    var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+    if (!isStandalone && !sessionStorage.getItem('strike_pos_pwa_install_dismissed')) {
+      document.getElementById('install-pwa-modal').classList.remove('hidden');
+    }
   }
-  document.getElementById('no-api-key-dismiss').addEventListener('click', function () {
-    document.getElementById('no-api-key-modal').classList.add('hidden');
+  document.getElementById('get-started-dismiss').addEventListener('click', function () {
+    sessionStorage.setItem('strike_pos_pwa_install_dismissed', '1');
+    document.getElementById('get-started-modal').classList.add('hidden');
   });
-  document.getElementById('no-api-key-settings').addEventListener('click', function () {
-    document.getElementById('no-api-key-modal').classList.add('hidden');
-    setView('settings');
+  document.getElementById('get-started-settings').addEventListener('click', function () {
+    document.getElementById('get-started-modal').classList.add('hidden');
+    tryNavigateTo('settings');
   });
-  document.getElementById('no-api-key-modal').addEventListener('click', function (e) {
-    if (e.target.id === 'no-api-key-modal') document.getElementById('no-api-key-modal').classList.add('hidden');
+  document.getElementById('get-started-modal').addEventListener('click', function (e) {
+    if (e.target.id === 'get-started-modal') {
+      sessionStorage.setItem('strike_pos_pwa_install_dismissed', '1');
+      document.getElementById('get-started-modal').classList.add('hidden');
+    }
+  });
+  document.getElementById('install-pwa-dismiss').addEventListener('click', function () {
+    sessionStorage.setItem('strike_pos_pwa_install_dismissed', '1');
+    document.getElementById('install-pwa-modal').classList.add('hidden');
+  });
+  document.getElementById('install-pwa-modal').addEventListener('click', function (e) {
+    if (e.target.id === 'install-pwa-modal') {
+      sessionStorage.setItem('strike_pos_pwa_install_dismissed', '1');
+      document.getElementById('install-pwa-modal').classList.add('hidden');
+    }
   });
 })();

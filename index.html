@@ -161,6 +161,9 @@
         <h3>About</h3>
         <p class="text-muted">Strike POS is a point-of-sale web app for accepting Bitcoin via the Lightning Network. Add products, build a cart, and generate a Lightning invoice for the customer to pay. Receipts and reconciliation data are stored on this device. No server or account is required beyond a Strike API key for creating invoices.</p>
 
+        <h4 class="about-faq-title">Install as PWA</h4>
+        <p class="text-muted">For the best experience, install this app on your home screen. In <strong>Chrome (Android)</strong>, open the menu (⋮) and choose <strong>Add to Home Screen</strong>. On <strong>iOS (Safari)</strong>, tap the share button and choose <strong>Add to Home Screen</strong>. Then open the app from your home screen instead of the browser.</p>
+
         <h4 class="about-faq-title">FAQ</h4>
         <dl class="about-faq">
           <dt>Is this free?</dt>
@@ -402,14 +405,63 @@
     </div>
   </div>
 
-  <!-- No API key notice (first visit) -->
-  <div class="modal-overlay hidden" id="no-api-key-modal">
-    <div class="modal card">
-      <h3>API key needed</h3>
-      <p class="text-muted">An API key needs to be set for payments and Bitcoin price data to function. Add your Strike API key in Settings.</p>
-      <div class="form-actions">
-        <button type="button" class="btn btn-ghost" id="no-api-key-dismiss">OK</button>
-        <button type="button" class="btn btn-primary" id="no-api-key-settings">Go to Settings</button>
+  <!-- Get started (API key + PWA) – shown when no API key; scrollable -->
+  <div class="modal-overlay hidden" id="get-started-modal">
+    <div class="modal card get-started-modal">
+      <div class="get-started-scroll">
+        <section class="get-started-section">
+          <h3>API key needed</h3>
+          <p class="text-muted">An API key needs to be set for payments and Bitcoin price data to function. Add your Strike API key in Settings.</p>
+          <button type="button" class="btn btn-primary" id="get-started-settings">Go to Settings</button>
+        </section>
+        <section class="get-started-section">
+          <h3>Install PWA</h3>
+          <p class="text-muted">For the best experience, use this app with your device's native web browser to install it as a Progressive Web App.</p>
+          <div class="install-pwa-section">
+            <h4>Android (Chrome)</h4>
+            <ul class="install-pwa-steps">
+              <li>⋮ Tap the menu (top right)</li>
+              <li>☑ Press <strong>Add to Home Screen</strong></li>
+            </ul>
+          </div>
+          <div class="install-pwa-section">
+            <h4>iOS (Safari)</h4>
+            <ul class="install-pwa-steps">
+              <li>↗ Tap share (bottom)</li>
+              <li>➕ Press <strong>Add to Home Screen</strong></li>
+            </ul>
+          </div>
+          <p class="text-muted install-pwa-after">Once you have installed this app on your device, close this browser window and use the app from your home screen.</p>
+        </section>
+      </div>
+      <div class="get-started-actions">
+        <button type="button" class="btn btn-primary" id="get-started-dismiss">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Install PWA prompt only (shown when API key is set and not installed as PWA) -->
+  <div class="modal-overlay hidden" id="install-pwa-modal">
+    <div class="modal card install-pwa-modal">
+      <h3>Install PWA</h3>
+      <p class="text-muted">For the best experience, use this app with your device's native web browser to install it as a Progressive Web App.</p>
+      <div class="install-pwa-section">
+        <h4>Android (Chrome)</h4>
+        <ul class="install-pwa-steps">
+          <li>⋮ Tap the menu (top right)</li>
+          <li>☑ Press <strong>Add to Home Screen</strong></li>
+        </ul>
+      </div>
+      <div class="install-pwa-section">
+        <h4>iOS (Safari)</h4>
+        <ul class="install-pwa-steps">
+          <li>↗ Tap share (bottom)</li>
+          <li>➕ Press <strong>Add to Home Screen</strong></li>
+        </ul>
+      </div>
+      <p class="text-muted install-pwa-after">Once you have installed this app on your device, close this browser window and use the app from your home screen.</p>
+      <div class="form-actions install-pwa-actions">
+        <button type="button" class="btn btn-primary" id="install-pwa-dismiss">OK</button>
       </div>
     </div>
   </div>

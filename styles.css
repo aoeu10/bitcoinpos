@@ -896,6 +896,22 @@ a:hover, a:focus { color: var(--link-hover); text-decoration: underline; }
 #import-summary-content { margin: 0.5rem 0; }
 #import-summary-content p { margin: 0.25rem 0; }
 
+.install-pwa-modal { max-width: 480px; }
+.install-pwa-section { margin-top: 1.25rem; }
+.install-pwa-section h4 { margin: 0 0 0.5rem 0; font-size: 1rem; font-weight: 700; color: var(--text); }
+.install-pwa-steps { margin: 0; padding-left: 1.25rem; color: var(--text-muted); font-size: 0.95rem; line-height: 1.5; }
+.install-pwa-steps li { margin: 0.25rem 0; }
+.install-pwa-after { margin-top: 1rem; margin-bottom: 0; }
+.install-pwa-actions { margin-top: 1.75rem; }
+
+.get-started-modal { max-width: 480px; max-height: 90vh; display: flex; flex-direction: column; }
+.get-started-scroll { flex: 1; min-height: 0; overflow-y: auto; padding-right: 0.25rem; }
+.get-started-section { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+.get-started-section:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+.get-started-section h3 { margin: 0 0 0.5rem 0; }
+.get-started-section .btn { margin-top: 0.5rem; }
+.get-started-actions { margin-top: 1.75rem; padding-top: 1rem; flex-shrink: 0; border-top: 1px solid var(--border); }
+
 .modal-close {
   position: absolute;
   top: 0.5rem;
