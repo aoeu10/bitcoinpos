@@ -1834,11 +1834,7 @@
       pendingImportData = null;
       document.getElementById('import-summary-modal').classList.add('hidden');
       document.getElementById('import-file').value = '';
-      loadSettings();
-      renderCategoryList();
-      renderProductList();
-      renderReconciliation();
-      alert('Import complete.');
+      location.reload();
     }
   });
 
@@ -2037,4 +2033,18 @@
   updateHeaderBtcPrice();
   setView('pos');
   renderCart();
+
+  if (!getApiKey().trim()) {
+    document.getElementById('no-api-key-modal').classList.remove('hidden');
+  }
+  document.getElementById('no-api-key-dismiss').addEventListener('click', function () {
+    document.getElementById('no-api-key-modal').classList.add('hidden');
+  });
+  document.getElementById('no-api-key-settings').addEventListener('click', function () {
+    document.getElementById('no-api-key-modal').classList.add('hidden');
+    setView('settings');
+  });
+  document.getElementById('no-api-key-modal').addEventListener('click', function (e) {
+    if (e.target.id === 'no-api-key-modal') document.getElementById('no-api-key-modal').classList.add('hidden');
+  });
 })();

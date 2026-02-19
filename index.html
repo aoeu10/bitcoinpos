@@ -219,8 +219,8 @@
         </div>
       </div>
       <div class="card">
-        <h3>Invoice API</h3>
-        <p class="text-muted">Your API key must have scopes: Create invoice, Generate invoice quote, and Read currency exchange rate tickers (partner.rates.ticker).</p>
+        <h3>Strike API</h3>
+        <p class="text-muted">Create an API key at <a href="https://dashboard.strike.me/api-keys" target="_blank" rel="noopener noreferrer">Strike Dashboard → API keys</a>. Your key must have scopes: Create invoice, Generate invoice quote, and Read currency exchange rate tickers (partner.rates.ticker).</p>
         <p class="text-muted"><a href="https://docs.strike.me" target="_blank" rel="noopener noreferrer">Strike API documentation</a></p>
         <label>API key</label>
         <input type="password" id="settings-api-key" placeholder="Strike API key" autocomplete="off" />
@@ -396,6 +396,18 @@
       <div class="form-actions">
         <button type="button" class="btn btn-ghost" id="import-password-cancel">Cancel</button>
         <button type="button" class="btn btn-primary" id="import-password-submit">Continue</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- No API key notice (first visit) -->
+  <div class="modal-overlay hidden" id="no-api-key-modal">
+    <div class="modal card">
+      <h3>API key needed</h3>
+      <p class="text-muted">An API key needs to be set for payments and Bitcoin price data to function. Add your Strike API key in Settings.</p>
+      <div class="form-actions">
+        <button type="button" class="btn btn-ghost" id="no-api-key-dismiss">OK</button>
+        <button type="button" class="btn btn-primary" id="no-api-key-settings">Go to Settings</button>
       </div>
     </div>
   </div>

@@ -6,6 +6,8 @@
   --text-muted: #94a3b8;
   --primary: #3b82f6;
   --primary-hover: #2563eb;
+  --link: #60a5fa;
+  --link-hover: #93c5fd;
   --border: #334155;
   --min-tap: 44px;
   --radius: 12px;
@@ -44,12 +46,15 @@ body {
   padding: 0.75rem 1rem;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .header-brand {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  min-width: 0;
 }
 
 .header-title {
@@ -57,6 +62,10 @@ body {
   font-size: 1.25rem;
   font-weight: 700;
   cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 .header-title:hover { opacity: 0.9; }
 
@@ -72,7 +81,10 @@ body {
 .header-nav {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 0.5rem;
+  justify-content: flex-end;
+  min-width: 0;
 }
 
 .header-btc-wrap {
@@ -100,8 +112,10 @@ body {
 
 .nav-btn {
   min-height: var(--min-tap);
-  padding: 0 1rem;
+  padding: 0 0.75rem;
   border-radius: var(--radius);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 .nav-btn.active {
   background: var(--primary);
@@ -343,6 +357,16 @@ body {
 }
 
 @media (max-width: 767px) {
+  .header-nav {
+    width: 100%;
+    flex: 1 1 100%;
+  }
+  .header-nav .header-btc-wrap {
+    margin-right: auto;
+  }
+  .nav-btn {
+    padding: 0 0.5rem;
+  }
   .cart-panel {
     position: relative;
     top: 0;
@@ -495,8 +519,11 @@ input[type="password"] {
 .about-card .about-faq dt { font-weight: 600; margin-top: 1rem; color: var(--text); }
 .about-card .about-faq dt:first-child { margin-top: 0; }
 .about-card .about-faq dd { margin: 0.35rem 0 0 0; padding: 0; color: var(--text-muted); font-size: 0.9rem; line-height: 1.45; }
-.about-card a { color: var(--primary); text-decoration: none; }
-.about-card a:hover, .about-card a:focus { text-decoration: underline; }
+.about-card a { color: var(--link); text-decoration: none; }
+.about-card a:hover, .about-card a:focus { color: var(--link-hover); text-decoration: underline; }
+
+a { color: var(--link); text-decoration: none; }
+a:hover, a:focus { color: var(--link-hover); text-decoration: underline; }
 
 .hidden { display: none !important; }
 
