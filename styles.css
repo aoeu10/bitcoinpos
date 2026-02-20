@@ -157,6 +157,16 @@ body {
   margin-top: 0.75rem;
   width: 100%;
   min-height: var(--min-tap);
+  border: 2px solid var(--border);
+  background: var(--surface-hover);
+  color: var(--text);
+  font-weight: 600;
+}
+.pos-menu-btn:hover,
+.pos-menu-btn:focus-visible {
+  border-color: var(--primary);
+  background: var(--surface-hover);
+  outline: none;
 }
 .pos-menu-btn.hidden { display: none !important; }
 .pos-menu-back {
